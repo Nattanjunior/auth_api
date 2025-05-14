@@ -1,0 +1,31 @@
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "name": "Admin",
+  "email": "admin@user.com",
+  "password": "admin",
+  "role": "ADMIN"
+}
+
+###
+
+GET http://localhost:3000/users
+
+### 
+GET http://localhost:3000/users/cmaogm43a0000fv3om4rdxddx
+
+###
+PATCH http://localhost:3000/users/cmaogm43a0000fv3om4rdxddx
+Content-Type: application/json
+
+{
+  "name": "JUNIN",
+  "email": "JUNIN@user.com",
+  "password": "GRAUZ",
+  "role": "READER"
+}
+
+
+###
+DELETE http://localhost:3000/users/cmaogm43a0000fv3om4rdxddx
