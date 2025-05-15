@@ -32,7 +32,7 @@ Content-Type: application/json
 DELETE http://localhost:3000/users/cmaogm43a0000fv3om4rdxddx
 
 ###
-
+# @name adminLogin
 POST http://localhost:3000/auth/login
 Content-Type: application/json
 
@@ -40,3 +40,21 @@ Content-Type: application/json
   "email": "admin@user.com",
   "password": "admin"
 }
+###
+
+@tokenAdmin = {{adminLogin.response.body.acess_token}}
+
+###
+POST http://localhost:3000/posts
+Content-Type: application/json
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "title":"My favority post in year",
+  "content":"This is my favority post",
+  "published":true
+}
+
+###
+GET http://localhost:3000/posts
+Authorization: Bearer {{tokenAdmin}}
