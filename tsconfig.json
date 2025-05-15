@@ -18,6 +18,9 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "typeRoots":[
+      "./prisma/@types"
+    ]
   }
 }
