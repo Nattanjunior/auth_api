@@ -11,6 +11,7 @@ Content-Type: application/json
 ###
 
 GET http://localhost:3000/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQHVzZXIuY29tIiwiaWF0IjoxNzQ3MjY2NDQ2LCJleHAiOjE3NDcyNzM2NDZ9.ba30XsxjL7lTYaAmKFJkychkZqUPjjYbt3swLFVvHUQ
 
 ### 
 GET http://localhost:3000/users/cmaogm43a0000fv3om4rdxddx
@@ -29,3 +30,13 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:3000/users/cmaogm43a0000fv3om4rdxddx
+
+###
+
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@user.com",
+  "password": "admin"
+}
