@@ -3,11 +3,16 @@ import { JwtService } from '@nestjs/jwt';
 import { Roles } from '@prisma/client';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
+import type { CaslService } from 'src/casl/casl.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private Jwt: JwtService, private prisma: PrismaService) { }
+  constructor(
+    private Jwt: JwtService,
+    private prisma: PrismaService,
+    private abilityService: CaslService,
+  ) { }
   async canActivate(
     context: ExecutionContext,
   ): Promise<boolean> {
@@ -25,6 +30,7 @@ export class AuthGuard implements CanActivate {
         email: string;
         role: Roles;
         sub: string;
+        permissions: string[];
       }>(token, { algorithms: ['HS256'] })
 
       const user = await this.prisma.user.findUnique({
@@ -36,7 +42,7 @@ export class AuthGuard implements CanActivate {
       }
 
       request.user = user;
-
+      this.abilityService.createForUser(user)
       return true;
     } catch (error) {
       console.error(error);
