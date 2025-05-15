@@ -3,12 +3,23 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import bcrypt from 'bcrypt'
+import type { CaslService } from 'src/casl/casl.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) { }
+  constructor(
+    private prisma: PrismaService,
+    private abilitySevice: CaslService
+  ) { }
 
   create(createUserDto: CreateUserDto) {
+
+    const ability = this.abilitySevice.ability;
+
+    if (!ability.can('create', 'User')) {
+      throw new Error('Unauthorized');
+    }
+
     return this.prisma.user.create({
       data: {
         ...createUserDto,
