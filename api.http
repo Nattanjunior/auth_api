@@ -25,6 +25,26 @@ Authorization: Bearer {{tokenAdmin}}
 }
 
 ###
+
+### Create Writer
+POST http://localhost:3000/users
+Content-Type: application/json
+Authorization: Bearer {{tokenAdmin}}
+
+{
+  "name": "Writer",
+  "email": "Writer@user.com",
+  "password": "Writer",
+  "role": "WRITER",
+  "permissions": [
+    {
+      "action":"read",
+      "resource":"User"
+    }
+  ]
+}
+
+###
 GET http://localhost:3000/users
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQHVzZXIuY29tIiwiaWF0IjoxNzQ3MjY2NDQ2LCJleHAiOjE3NDcyNzM2NDZ9.ba30XsxjL7lTYaAmKFJkychkZqUPjjYbt3swLFVvHUQ
 
@@ -73,6 +93,19 @@ Content-Type: application/json
 @tokenReader = {{readerLogin.response.body.acess_token}}
 
 ###
+
+# @name WriterLogin
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "Writer@user.com",
+  "password": "Writer"
+}
+###
+@tokenWriter = {{WriterLogin.response.body.acess_token}}
+
+###
 POST http://localhost:3000/posts
 Content-Type: application/json
 Authorization: Bearer {{tokenReader}}
@@ -86,3 +119,10 @@ Authorization: Bearer {{tokenReader}}
 ###
 GET http://localhost:3000/posts
 Authorization: Bearer {{tokenAdmin}}
+
+
+###
+
+GET http://localhost:3000/users
+Authorization: Bearer {{tokenWriter}}
+###
