@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Roles } from '@prisma/client';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import type { CaslService } from 'src/casl/casl.service';
+import { CaslService } from 'src/casl/casl.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
