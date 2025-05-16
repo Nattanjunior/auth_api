@@ -1,7 +1,7 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability';
 import { createPrismaAbility, Subjects, type PrismaQuery } from '@casl/prisma';
 import { Injectable, Scope } from '@nestjs/common';
-import { Post, User, type Roles } from '@prisma/client';
+import { Post, User, Roles } from '@prisma/client';
 
 export type PermActions = 'manage' | 'create' | 'read' | 'update' | 'delete'
 
