@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import type { CaslService } from 'src/casl/casl.service';
+import { CaslService } from 'src/casl/casl.service';
 import { accessibleBy } from '@casl/prisma';
 
 @Injectable()
@@ -64,7 +64,7 @@ export class PostsService {
       }
     });
 
-    if(!post){
+    if (!post) {
       throw new Error('Post not found');
     }
 
