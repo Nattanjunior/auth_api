@@ -20,7 +20,8 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "typeRoots":[
-      "./prisma/@types"
+      "./prisma/@types",
+      "./node_modules/@types"
     ]
   }
 }
