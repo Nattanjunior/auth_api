@@ -41,6 +41,9 @@ export class CaslService {
 
   createForUser(user: User) {
     const builder = new AbilityBuilder<AppAbility>(createPrismaAbility);
+    user.permissions?.forEach((permission) => {
+      builder.can(permission.action, permission.resource, permission.condition)
+    })
     rolePermissionsMap[user.role](user, builder);
     this.ability = builder.build();
     return this.ability;
