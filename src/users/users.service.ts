@@ -3,18 +3,19 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import bcrypt from 'bcrypt'
-import type { CaslService } from 'src/casl/casl.service';
+import { CaslService } from 'src/casl/casl.service';
+import { accessibleBy } from '@casl/prisma';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
-    private abilitySevice: CaslService
+    private abilityService: CaslService
   ) { }
 
   create(createUserDto: CreateUserDto) {
 
-    const ability = this.abilitySevice.ability;
+    const ability = this.abilityService.ability;
 
     if (!ability.can('create', 'User')) {
       throw new Error('Unauthorized');
@@ -29,7 +30,12 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prisma.user.findMany();
+    const ability = this.abilityService.ability;
+    return this.prisma.user.findMany({
+      where: {
+        AND: [accessibleBy(ability, 'read').User]
+      }
+    });
   }
 
   findOne(id: string) {
