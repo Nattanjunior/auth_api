@@ -2,97 +2,161 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Sistema de Autenticação com NestJS
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Descrição
 
-## Description
+Sistema seguro de autenticação construído com [NestJS](https://github.com/nestjs/nest) utilizando TypeScript. O projeto implementa autenticação de usuários com tokens JWT, controle de acesso baseado em funções (RBAC) usando CASL e gerenciamento seguro de senhas com bcrypt.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tecnologias Utilizadas
 
-## Project setup
+- **NestJS** - Framework Node.js progressivo para construir aplicações server-side eficientes e escaláveis
+- **Prisma ORM** - ORM de próxima geração para Node.js e TypeScript
+- **PostgreSQL** - Sistema de banco de dados relacional
+- **JWT** (JSON Web Token) - Para autenticação segura
+- **CASL** - Framework de autorização isomórfico
+- **bcrypt** - Biblioteca para criptografia de senhas
 
-```bash
-$ npm install
-```
+## Pré-requisitos
 
-## Compile and run the project
+- Node.js (v18 ou superior)
+- npm ou yarn
+- Docker e Docker Compose (para o banco de dados PostgreSQL)
+
+## Como Instalar e Executar
+
+1. **Clone o repositório:**
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/seu-usuario/nestjs-auth.git
+cd nestjs-auth
 ```
 
-## Run tests
+2. **Instale as dependências:**
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
+# ou
+yarn install
 ```
 
-## Deployment
+3. **Configure as variáveis de ambiente:**
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/nest-db?schema=public"
+JWT_SECRET="seu-segredo-jwt-aqui"
+PORT=3000
+```
+
+4. **Inicie o banco de dados PostgreSQL:**
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker-compose up -d
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+5. **Execute as migrações do Prisma:**
 
-## Resources
+```bash
+npx prisma migrate dev
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+6. **Inicie o servidor de desenvolvimento:**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm run start:dev
+# ou
+yarn start:dev
+```
 
-## Support
+O servidor estará disponível em `http://localhost:3000`.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Estrutura do Projeto
 
-## Stay in touch
+```
+src/
+├── auth/           # Módulo de autenticação
+├── users/          # Módulo de usuários
+├── posts/          # Módulo de posts
+├── casl/           # Configuração de autorização CASL
+├── prisma/         # Serviço Prisma para conexão com o banco
+└── main.ts         # Ponto de entrada da aplicação
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Rotas da API
 
-## License
+### Autenticação
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- `POST /auth/login` - Login de usuário
+  ```json
+  {
+    "email": "usuario@email.com",
+    "password": "senha123"
+  }
+  ```
+  Retorna um token JWT para autenticação.
+
+### Usuários
+
+- `POST /users` - Cria um novo usuário (requer autenticação de admin)
+  ```json
+  {
+    "name": "Nome do Usuário",
+    "email": "usuario@email.com",
+    "password": "senha123",
+    "role": "READER"
+  }
+  ```
+
+- `GET /users` - Lista todos os usuários (requer autenticação de admin)
+- `GET /users/:id` - Obtém detalhes de um usuário específico (requer autenticação de admin)
+- `PATCH /users/:id` - Atualiza dados do usuário (requer autenticação de admin)
+- `DELETE /users/:id` - Remove um usuário (requer autenticação de admin)
+
+### Posts
+
+- `POST /posts` - Cria um novo post (requer autenticação de writer ou editor)
+  ```json
+  {
+    "title": "Título do Post",
+    "content": "Conteúdo do post...",
+    "published": true
+  }
+  ```
+
+- `GET /posts` - Lista todos os posts (requer autenticação de reader, writer ou editor)
+- `GET /posts/:id` - Obtém detalhes de um post específico (requer autenticação de reader, writer ou editor)
+- `PATCH /posts/:id` - Atualiza um post (requer autenticação de writer ou editor)
+- `DELETE /posts/:id` - Remove um post (requer autenticação de admin)
+
+## Sistema de Roles (Funções)
+
+O sistema implementa controle de acesso baseado em funções (RBAC) com as seguintes roles:
+
+- **ADMIN** - Acesso total ao sistema
+- **EDITOR** - Pode criar e editar posts
+- **WRITER** - Pode criar e editar seus próprios posts
+- **READER** - Pode apenas visualizar posts
+
+## Testes
+
+Para executar os testes unitários:
+
+```bash
+npm run test
+# ou
+yarn test
+```
+
+Para executar os testes end-to-end:
+
+```bash
+npm run test:e2e
+# ou
+yarn test:e2e
+```
+
+## Licença
+
+Este projeto está licenciado sob a licença [MIT](LICENSE).
