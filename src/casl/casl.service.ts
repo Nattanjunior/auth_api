@@ -35,15 +35,35 @@ const rolePermissionsMap: Record<Roles, DefinePermissions> = {
   },
 }
 
+
+type PermissionList = Array<{
+  action: PermActions;
+  resource: PermissionResource;
+  condition?: Record<string, any>;
+}>;
+
 @Injectable({ scope: Scope.REQUEST })
 export class CaslService {
   ability: AppAbility;
 
   createForUser(user: User) {
     const builder = new AbilityBuilder<AppAbility>(createPrismaAbility);
-    user.permissions?.forEach((permission) => {
-      builder.can(permission.action, permission.resource, permission.condition)
-    })
+    if (Array.isArray(user.permissions)) {
+      (user.permissions as PermissionList).forEach((permission) => {
+        if (
+          permission &&
+          typeof permission === 'object' &&
+          typeof permission.action === 'string' &&
+          typeof permission.resource === 'string'
+        ) {
+          builder.can(
+            permission.action as PermActions,
+            permission.resource,
+            permission.condition
+          );
+        }
+      });
+    }
     rolePermissionsMap[user.role](user, builder);
     this.ability = builder.build();
     return this.ability;
