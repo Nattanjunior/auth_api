@@ -5,6 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import bcrypt from 'bcrypt'
 import { CaslService } from 'src/casl/casl.service';
 import { packRules } from '@casl/ability/extra';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { Roles } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -41,5 +43,26 @@ export class AuthService {
       permissions: packRules(ability.rules),
     })
     return { acess_token: token }
+  }
+
+  async register(createUserDto: CreateUserDto) {
+    // Verifica se já existe usuário com o mesmo email
+    const existing = await this.prisma.user.findUnique({ where: { email: createUserDto.email } });
+    if (existing) {
+      throw new Error('Email já cadastrado');
+    }
+    // Cria usuário com role READER e sem permissions customizadas
+    const user = await this.prisma.user.create({
+      data: {
+        name: createUserDto.name,
+        email: createUserDto.email,
+        password: bcrypt.hashSync(createUserDto.password, 10),
+        role: Roles.READER,
+        // Não permite permissions customizadas
+      }
+    });
+    // Retorna dados sem a senha
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 }
