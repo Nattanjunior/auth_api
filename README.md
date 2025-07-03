@@ -157,6 +157,22 @@ npm run test:e2e
 yarn test:e2e
 ```
 
+## Documentação Interativa (Swagger)
+
+Acesse a documentação interativa da API via Swagger em:
+
+```
+http://localhost:3000/api
+```
+
+Nessa interface, você pode:
+- Visualizar todos os endpoints disponíveis
+- Testar requisições diretamente pelo navegador
+- Ver exemplos de payloads e respostas
+- Realizar autenticação com JWT para testar rotas protegidas
+
+> **Dica:** Após fazer login e obter o token JWT, clique em "Authorize" no Swagger e cole o token para liberar o teste das rotas protegidas.
+
 ## Licença
 
 Este projeto está licenciado sob a licença [MIT](LICENSE).
