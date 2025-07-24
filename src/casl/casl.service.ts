@@ -24,14 +24,17 @@ const rolePermissionsMap: Record<Roles, DefinePermissions> = {
     can('create', 'Post');
     can('read', 'Post');
     can('update', 'Post');
+    can('read', 'User');
   },
   WRITER(user, { can }) {
     can('create', 'Post');
     can('read', 'Post', { authorId: user.id });
     can('update', 'Post', { authorId: user.id });
+    can('read', 'User'); // ✅ WRITER pode ler usuários
   },
   READER(user, { can }) {
     can('read', 'Post', { published: true });
+    can('read', 'User'); // ✅ READER pode ler usuários (para casos de uso específicos)
   },
 }
 
@@ -48,6 +51,11 @@ export class CaslService {
 
   createForUser(user: User) {
     const builder = new AbilityBuilder<AppAbility>(createPrismaAbility);
+    
+    // ✅ PRIMEIRO: Aplica permissões da role (base)
+    rolePermissionsMap[user.role](user, builder);
+    
+    // ✅ SEGUNDO: Aplica permissões customizadas (sobrescreve se necessário)
     if (Array.isArray(user.permissions)) {
       (user.permissions as PermissionList).forEach((permission) => {
         if (
@@ -64,7 +72,7 @@ export class CaslService {
         }
       });
     }
-    rolePermissionsMap[user.role](user, builder);
+    
     this.ability = builder.build();
     return this.ability;
   }
