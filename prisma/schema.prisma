@@ -20,17 +20,52 @@ enum Roles {
   READER
 }
 
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  GITHUB
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+}
+
 model User {
-  id          String   @id @default(cuid())
-  name        String
-  email       String   @unique
-  password    String
-  role        Roles    @default(READER)
+  id            String       @id @default(cuid())
+  name          String
+  email         String       @unique
+  password      String? // Nullable para OAuth
+  role          Roles        @default(READER)
+  authProvider  AuthProvider @default(LOCAL)
+  providerId    String? // ID do usuário no provedor OAuth
+  avatar        String? // URL do avatar
+  emailVerified Boolean      @default(false)
+  isActive      Boolean      @default(true)
+  lastLoginAt   DateTime?
   // [Permission List]
-  permissions Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
-  Post        Post[]
+  permissions   Json?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Relations
+  posts     Post[]
+  tokens    Token[]
+  auditLogs AuditLog[]
+
+  @@map("users")
+}
+
+model Token {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  type      TokenType
+  expiresAt DateTime
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  @@map("tokens")
 }
 
 model Post {
@@ -39,8 +74,24 @@ model Post {
   content   String   @db.Text
   published Boolean  @default(false)
   authorId  String
-  author    User     @relation(fields: [userId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  userId    String
+  updatedAt DateTime @updatedAt
+
+  @@map("posts")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action     String // LOGIN, LOGOUT, CREATE, UPDATE, DELETE, etc.
+  resource   String // User, Post, etc.
+  resourceId String? // ID do recurso afetado
+  details    Json? // Detalhes adicionais
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@map("audit_logs")
 }
