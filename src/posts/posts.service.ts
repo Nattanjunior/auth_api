@@ -4,6 +4,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CaslService } from 'src/casl/casl.service';
 import { accessibleBy } from '@casl/prisma';
+import { User } from '@prisma/client';
+import { subject } from '@casl/ability';
 
 @Injectable()
 export class PostsService {
@@ -12,17 +14,18 @@ export class PostsService {
     private abilityService: CaslService
   ) { }
 
-  create(createPostDto: CreatePostDto & { authorId: string }) {
-    const ability = this.abilityService.ability;
+  create(createPostDto: CreatePostDto & { authorId: string }, user: User) {
+    const ability = this.abilityService.createForUser(user);
 
     if (!ability.can('create', 'Post')) {
       throw new Error('Unauthorized')
     }
 
-
     return this.prisma.post.create({
       data: {
-        ...createPostDto,
+        title: createPostDto.title,
+        content: createPostDto.content,
+        published: createPostDto.published,
         author: {
           connect: { id: createPostDto.authorId }
         }
@@ -30,8 +33,8 @@ export class PostsService {
     });
   }
 
-  findAll() {
-    const ability = this.abilityService.ability;
+  findAll(user: User) {
+    const ability = this.abilityService.createForUser(user);
     return this.prisma.post.findMany({
       where: {
         AND: [accessibleBy(ability, 'read').Post],
@@ -39,12 +42,12 @@ export class PostsService {
     });
   }
 
-  findOne(id: string) {
-    const ability = this.abilityService.ability;
+  findOne(id: string, user: User) {
+    const ability = this.abilityService.createForUser(user);
+    
     if (!ability.can('read', 'Post')) {
       throw new Error('Unauthorized');
     }
-
 
     return this.prisma.post.findUnique({
       where: {
@@ -54,8 +57,8 @@ export class PostsService {
     });
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto) {
-    const ability = this.abilityService.ability;
+  async update(id: string, updatePostDto: UpdatePostDto, user: User) {
+    const ability = this.abilityService.createForUser(user);
 
     const post = await this.prisma.post.findUnique({
       where: {
@@ -68,13 +71,31 @@ export class PostsService {
       throw new Error('Post not found');
     }
 
+    if (!ability.can('update', subject('Post', post))) {
+      throw new Error('Unauthorized to update this post');
+    }
+
     return this.prisma.post.update({
       where: { id },
       data: updatePostDto
     });
   }
 
-  remove(id: string) {
+  async remove(id: string, user: User) {
+    const ability = this.abilityService.createForUser(user);
+
+    const post = await this.prisma.post.findUnique({
+      where: { id }
+    });
+
+    if (!post) {
+      throw new Error('Post not found');
+    }
+
+    if (!ability.can('delete', subject('Post', post))) {
+      throw new Error('Unauthorized to delete this post');
+    }
+
     return this.prisma.post.delete({
       where: { id }
     });
