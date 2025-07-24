@@ -2,177 +2,268 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-# Sistema de Autenticação com NestJS
+# 🔐 Sistema de Autenticação NestJS
 
-## Descrição
+Sistema completo de autenticação e autorização construído com NestJS, implementando JWT, OAuth 2.0 e controle de acesso baseado em roles (RBAC) com CASL.
 
-Sistema seguro de autenticação construído com [NestJS](https://github.com/nestjs/nest) utilizando TypeScript. O projeto implementa autenticação de usuários com tokens JWT, controle de acesso baseado em funções (RBAC) usando CASL e gerenciamento seguro de senhas com bcrypt.
+## 🎯 Visão Geral
 
-## Tecnologias Utilizadas
+Este projeto demonstra uma implementação robusta de autenticação moderna, integrando múltiplos provedores de identidade e um sistema granular de permissões. Ideal para aplicações que necessitam de controle de acesso sofisticado e flexível.
 
-- **NestJS** - Framework Node.js progressivo para construir aplicações server-side eficientes e escaláveis
-- **Prisma ORM** - ORM de próxima geração para Node.js e TypeScript
-- **PostgreSQL** - Sistema de banco de dados relacional
-- **JWT** (JSON Web Token) - Para autenticação segura
-- **CASL** - Framework de autorização isomórfico
-- **bcrypt** - Biblioteca para criptografia de senhas
+## 🏗️ Arquitetura e Decisões Técnicas
 
-## Pré-requisitos
+### Stack Principal
 
-- Node.js (v18 ou superior)
-- npm ou yarn
-- Docker e Docker Compose (para o banco de dados PostgreSQL)
+| Tecnologia | Versão | Justificativa |
+|------------|--------|---------------|
+| **NestJS** | ^10.0.0 | Framework progressivo que oferece estrutura modular, decorators e injeção de dependência nativa |
+| **Prisma ORM** | ^5.0.0 | Type-safety completo, migrações automáticas e excelente DX para PostgreSQL |
+| **PostgreSQL** | 15+ | Banco relacional robusto com suporte nativo a JSON para permissões customizadas |
+| **JWT** | - | Tokens stateless ideais para APIs distribuídas e microserviços |
+| **CASL** | ^6.0.0 | Framework de autorização isomórfico que permite regras complexas e condicionais |
+| **Passport.js** | ^0.6.0 | Middleware maduro com +500 estratégias de autenticação |
 
-## Como Instalar e Executar
+### Decisões de Design
 
-1. **Clone o repositório:**
+#### 1. **Autenticação Híbrida**
+- **Local**: Email/senha com bcrypt para máxima segurança
+- **OAuth 2.0**: Google e GitHub para UX moderna
+- **Unificação**: Todos os provedores resultam no mesmo modelo de usuário
 
-```bash
-git clone https://github.com/seu-usuario/nestjs-auth.git
-cd nestjs-auth
-```
+#### 2. **Autorização em Camadas**
+- **Roles**: Sistema base (ADMIN, EDITOR, WRITER, READER)
+- **Permissions**: Granularidade por recurso e ação
+- **Conditions**: Regras contextuais (ex: "apenas próprios posts")
 
-2. **Instale as dependências:**
+#### 3. **Configuração por Padrão**
+- **Todos usuários = ADMIN**: Simplifica onboarding inicial
+- **Fácil customização**: Alteração simples no código para roles específicas
 
-```bash
-npm install
-# ou
-yarn install
-```
-
-3. **Configure as variáveis de ambiente:**
-
-Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
-
-```
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/nest-db?schema=public"
-JWT_SECRET="seu-segredo-jwt-aqui"
-PORT=3000
-```
-
-4. **Inicie o banco de dados PostgreSQL:**
-
-```bash
-docker-compose up -d
-```
-
-5. **Execute as migrações do Prisma:**
-
-```bash
-npx prisma migrate dev
-```
-
-6. **Inicie o servidor de desenvolvimento:**
-
-```bash
-npm run start:dev
-# ou
-yarn start:dev
-```
-
-O servidor estará disponível em `http://localhost:3000`.
-
-## Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
 src/
-├── auth/           # Módulo de autenticação
-├── users/          # Módulo de usuários
-├── posts/          # Módulo de posts
-├── casl/           # Configuração de autorização CASL
-├── prisma/         # Serviço Prisma para conexão com o banco
-└── main.ts         # Ponto de entrada da aplicação
+├── 🔐 auth/                    # Módulo de autenticação
+│   ├── dto/                    # Data Transfer Objects
+│   │   ├── login.dto.ts        # Validação de login
+│   │   └── register.dto.ts     # Validação de registro público
+│   ├── guards/                 # Guards de proteção
+│   │   ├── jwt-auth.guard.ts   # Validação JWT
+│   │   ├── role.guard.ts       # Verificação de roles
+│   │   ├── google-auth.guard.ts # OAuth Google
+│   │   └── github-auth.guard.ts # OAuth GitHub
+│   ├── strategies/             # Estratégias Passport
+│   │   ├── jwt.strategy.ts     # Estratégia JWT
+│   │   ├── google.strategy.ts  # OAuth Google
+│   │   └── github.strategy.ts  # OAuth GitHub
+│   ├── role/                   # Decorators de roles
+│   ├── auth.controller.ts      # Endpoints de autenticação
+│   ├── auth.service.ts         # Lógica de negócio auth
+│   └── auth.module.ts          # Configuração do módulo
+├── 👥 users/                   # Módulo de usuários
+│   ├── dto/                    # DTOs de usuário
+│   ├── users.controller.ts     # CRUD de usuários
+│   ├── users.service.ts        # Lógica de negócio
+│   └── users.module.ts         # Configuração do módulo
+├── 📝 posts/                   # Módulo de posts (exemplo)
+│   ├── dto/                    # DTOs de posts
+│   ├── posts.controller.ts     # CRUD de posts
+│   ├── posts.service.ts        # Lógica de negócio
+│   └── posts.module.ts         # Configuração do módulo
+├── 🔑 casl/                    # Autorização CASL
+│   ├── casl.service.ts         # Definição de abilities
+│   └── casl.module.ts          # Configuração CASL
+├── 🗄️ prisma/                 # Database
+│   ├── prisma.service.ts       # Cliente Prisma
+│   └── prisma.module.ts        # Configuração Prisma
+├── ⚙️ config/                  # Configurações
+│   └── configuration.ts        # Variáveis de ambiente
+└── main.ts                     # Bootstrap da aplicação
 ```
 
-## Rotas da API
+## 🚀 Configuração e Execução
 
-### Autenticação
+### Pré-requisitos
+- Node.js 18+
+- Docker & Docker Compose
+- Conta Google Cloud (opcional)
+- Conta GitHub Developer (opcional)
 
-- `POST /auth/login` - Login de usuário
-  ```json
-  {
-    "email": "usuario@email.com",
-    "password": "senha123"
-  }
-  ```
-  Retorna um token JWT para autenticação.
+### 1. Instalação
+```bash
+git clone <repository-url>
+cd nestjs-auth
+npm install
+```
 
-### Usuários
+### 2. Configuração do Ambiente
+```env
+# Database
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/nest-db?schema=public"
 
-- `POST /users` - Cria um novo usuário (requer autenticação de admin)
-  ```json
-  {
-    "name": "Nome do Usuário",
-    "email": "usuario@email.com",
-    "password": "senha123",
-    "role": "READER"
-  }
-  ```
+# JWT
+JWT_SECRET="seu-jwt-secret-super-seguro-aqui"
+JWT_ACCESS_TOKEN_EXPIRES_IN="2h"
+JWT_REFRESH_TOKEN_EXPIRES_IN="7d"
 
-- `GET /users` - Lista todos os usuários (requer autenticação de admin)
-- `GET /users/:id` - Obtém detalhes de um usuário específico (requer autenticação de admin)
-- `PATCH /users/:id` - Atualiza dados do usuário (requer autenticação de admin)
-- `DELETE /users/:id` - Remove um usuário (requer autenticação de admin)
+# Google OAuth (opcional)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GOOGLE_CALLBACK_URL="http://localhost:3000/auth/google/callback"
 
-### Posts
+# GitHub OAuth (opcional)
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+GITHUB_CALLBACK_URL="http://localhost:3000/auth/github/callback"
 
-- `POST /posts` - Cria um novo post (requer autenticação de writer ou editor)
-  ```json
-  {
-    "title": "Título do Post",
-    "content": "Conteúdo do post...",
-    "published": true
-  }
-  ```
+# Server
+PORT=3000
+```
 
-- `GET /posts` - Lista todos os posts (requer autenticação de reader, writer ou editor)
-- `GET /posts/:id` - Obtém detalhes de um post específico (requer autenticação de reader, writer ou editor)
-- `PATCH /posts/:id` - Atualiza um post (requer autenticação de writer ou editor)
-- `DELETE /posts/:id` - Remove um post (requer autenticação de admin)
+### 3. Database Setup
+```bash
+docker-compose up -d          # Inicia PostgreSQL
+npx prisma migrate dev        # Executa migrações
+npx prisma generate          # Gera cliente Prisma
+```
 
-## Sistema de Roles (Funções)
+### 4. Execução
+```bash
+npm run start:dev            # Desenvolvimento
+npm run build && npm start   # Produção
+```
 
-O sistema implementa controle de acesso baseado em funções (RBAC) com as seguintes roles:
+## 🔌 API Endpoints
 
-- **ADMIN** - Acesso total ao sistema
-- **EDITOR** - Pode criar e editar posts
-- **WRITER** - Pode criar e editar seus próprios posts
-- **READER** - Pode apenas visualizar posts
+### 🔐 Autenticação
 
-## Testes
+| Método | Endpoint | Descrição | Autenticação |
+|--------|----------|-----------|--------------|
+| `POST` | `/auth/login` | Login local | ❌ |
+| `POST` | `/auth/register` | Registro público | ❌ |
+| `GET` | `/auth/google` | OAuth Google | ❌ |
+| `GET` | `/auth/github` | OAuth GitHub | ❌ |
+| `GET` | `/auth/config/oauth` | Status OAuth | ❌ |
 
-Para executar os testes unitários:
+### 👥 Usuários (ADMIN apenas)
+
+| Método | Endpoint | Descrição | Role Necessária |
+|--------|----------|-----------|-----------------|
+| `GET` | `/users` | Listar usuários | ADMIN |
+| `GET` | `/users/:id` | Buscar usuário | ADMIN |
+| `POST` | `/users` | Criar usuário | ADMIN |
+| `PATCH` | `/users/:id` | Atualizar usuário | ADMIN |
+| `DELETE` | `/users/:id` | Remover usuário | ADMIN |
+
+### 📝 Posts (Exemplo RBAC)
+
+| Método | Endpoint | Descrição | Role Necessária |
+|--------|----------|-----------|-----------------|
+| `GET` | `/posts` | Listar posts | READER+ |
+| `GET` | `/posts/:id` | Buscar post | READER+ |
+| `POST` | `/posts` | Criar post | WRITER+ |
+| `PATCH` | `/posts/:id` | Atualizar post | WRITER+ |
+| `DELETE` | `/posts/:id` | Remover post | ADMIN |
+
+## 🔑 Sistema de Permissões
+
+### Hierarquia de Roles
+```typescript
+ADMIN    → Acesso total ao sistema
+EDITOR   → Gerencia todos os posts + lê usuários
+WRITER   → Gerencia próprios posts + lê usuários
+READER   → Visualiza posts públicos + lê usuários
+```
+
+### Configuração Atual
+> ⚠️ **Importante**: Por padrão, todos os usuários (local e OAuth) são criados como **ADMIN**.
+
+Para alterar este comportamento:
+```typescript
+// src/auth/auth.service.ts - linha 45
+role: Roles.READER, // Mude de ADMIN para a role desejada
+```
+
+## 🌐 Configuração OAuth
+
+### Google OAuth
+1. Acesse [Google Cloud Console](https://console.cloud.google.com/)
+2. Crie/selecione projeto
+3. "APIs & Services" → "Credentials"
+4. "Create Credentials" → "OAuth 2.0 Client IDs"
+5. Configure:
+   - **Type**: Web application
+   - **Redirect URI**: `http://localhost:3000/auth/google/callback`
+
+### GitHub OAuth
+1. Acesse [GitHub Settings](https://github.com/settings/developers)
+2. "New OAuth App"
+3. Configure:
+   - **Homepage URL**: `http://localhost:3000`
+   - **Callback URL**: `http://localhost:3000/auth/github/callback`
+
+## 📚 Documentação Interativa
+
+Acesse `http://localhost:3000/docs` para:
+- ✅ Explorar todos os endpoints
+- ✅ Testar requisições diretamente
+- ✅ Ver schemas e validações
+- ✅ Autenticar com JWT
+- ✅ Documentação OAuth completa
+
+### Como usar:
+1. **Autenticação local**: Use `/auth/login` ou `/auth/register`
+2. **OAuth**: Acesse diretamente `/auth/google` ou `/auth/github`
+3. **Rotas protegidas**: Clique "Authorize" e cole o JWT token
+
+## 🛡️ Segurança
+
+- ✅ **Senhas**: Hash bcrypt com salt
+- ✅ **JWT**: Tokens assinados com secret seguro
+- ✅ **Validação**: Class-validator em todos os DTOs
+- ✅ **CORS**: Configurado para produção
+- ✅ **Rate Limiting**: Implementável via @nestjs/throttler
+- ✅ **HTTPS**: Recomendado para produção
+
+## 🧪 Testes
 
 ```bash
-npm run test
-# ou
-yarn test
+npm run test              # Testes unitários
+npm run test:e2e          # Testes end-to-end
+npm run test:cov          # Coverage report
 ```
 
-Para executar os testes end-to-end:
+## 🚀 Deploy
 
-```bash
-npm run test:e2e
-# ou
-yarn test:e2e
+### Variáveis de Produção
+```env
+NODE_ENV=production
+DATABASE_URL="postgresql://user:pass@host:5432/db"
+JWT_SECRET="super-secret-production-key"
+GOOGLE_CLIENT_ID="prod-google-id"
+GITHUB_CLIENT_ID="prod-github-id"
 ```
 
-## Documentação Interativa (Swagger)
-
-Acesse a documentação interativa da API via Swagger em:
-
+### Docker
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "run", "start:prod"]
 ```
-http://localhost:3000/api
-```
 
-Nessa interface, você pode:
-- Visualizar todos os endpoints disponíveis
-- Testar requisições diretamente pelo navegador
-- Ver exemplos de payloads e respostas
-- Realizar autenticação com JWT para testar rotas protegidas
+## 🤝 Contribuição
 
-> **Dica:** Após fazer login e obter o token JWT, clique em "Authorize" no Swagger e cole o token para liberar o teste das rotas protegidas.
+1. Fork o projeto
+2. Crie uma branch (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -am 'Add: nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
 
-## Licença
+## 📄 Licença
 
-Este projeto está licenciado sob a licença [MIT](LICENSE).
+Este projeto está sob a licença [MIT](LICENSE).
