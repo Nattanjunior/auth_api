@@ -1,18 +1,37 @@
-## Create admin
-POST http://localhost:3000/users
+## Create admin (TEMPORÁRIO - já criado)
+POST http://localhost:3000/auth/create-admin
+Content-Type: application/json
+
+###
+
+# @name adminLogin
+POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "name": "Admin",
-  "email": "admin@user.com",
-  "password": "admin",
-  "role": "ADMIN"
+  "email": "admin@test.com",
+  "password": "admin123"
 }
+###
+
+@tokenAdmin = {{adminLogin.response.body.access_token}}
 
 ###
 
 
-### Create Reader
+## Test Users Endpoint
+GET http://localhost:3000/users
+Authorization: Bearer {{tokenAdmin}}
+
+###
+
+## Test Posts Endpoint
+GET http://localhost:3000/posts
+Authorization: Bearer {{tokenAdmin}}
+
+###
+
+## Create Reader
 POST http://localhost:3000/users
 Content-Type: application/json
 Authorization: Bearer {{tokenAdmin}}
@@ -26,61 +45,20 @@ Authorization: Bearer {{tokenAdmin}}
 
 ###
 
-### Create Writer
+## Create Writer
 POST http://localhost:3000/users
 Content-Type: application/json
 Authorization: Bearer {{tokenAdmin}}
 
 {
   "name": "Writer",
-  "email": "Writer@user.com",
-  "password": "Writer",
-  "role": "WRITER",
-  "permissions": [
-    {
-      "action":"read",
-      "resource":"User"
-    }
-  ]
+  "email": "writer@user.com",
+  "password": "writer",
+  "role": "WRITER"
 }
 
 ###
-GET http://localhost:3000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRtaW4iLCJlbWFpbCI6ImFkbWluQHVzZXIuY29tIiwiaWF0IjoxNzQ3MjY2NDQ2LCJleHAiOjE3NDcyNzM2NDZ9.ba30XsxjL7lTYaAmKFJkychkZqUPjjYbt3swLFVvHUQ
 
-### 
-GET http://localhost:3000/users/cmaogm43a0000fv3om4rdxddx
-
-###
-PATCH http://localhost:3000/users/cmaogm43a0000fv3om4rdxddx
-Content-Type: application/json
-
-{
-  "name": "JUNIN",
-  "email": "JUNIN@user.com",
-  "password": "GRAUZ",
-  "role": "READER"
-}
-
-
-###
-DELETE http://localhost:3000/users/cmaogm43a0000fv3om4rdxddx
-
-###
-
-# @name adminLogin
-POST http://localhost:3000/auth/login
-Content-Type: application/json
-
-{
-  "email": "admin@user.com",
-  "password": "admin"
-}
-###
-
-@tokenAdmin = {{adminLogin.response.body.acess_token}}
-
-###
 # @name readerLogin
 POST http://localhost:3000/auth/login
 Content-Type: application/json
@@ -90,39 +68,50 @@ Content-Type: application/json
   "password": "reader"
 }
 ###
-@tokenReader = {{readerLogin.response.body.acess_token}}
+@tokenReader = {{readerLogin.response.body.access_token}}
 
 ###
 
-# @name WriterLogin
+# @name writerLogin
 POST http://localhost:3000/auth/login
 Content-Type: application/json
 
 {
-  "email": "Writer@user.com",
-  "password": "Writer"
+  "email": "writer@user.com",
+  "password": "writer"
 }
 ###
-@tokenWriter = {{WriterLogin.response.body.acess_token}}
+@tokenWriter = {{writerLogin.response.body.access_token}}
 
 ###
+
+## Test Create Post (Reader should fail)
 POST http://localhost:3000/posts
 Content-Type: application/json
 Authorization: Bearer {{tokenReader}}
 
 {
-  "title":"My favority post in year",
-  "content":"This is my favority post",
+  "title":"My favorite post in year",
+  "content":"This is my favorite post",
   "published":true
 }
 
 ###
-GET http://localhost:3000/posts
-Authorization: Bearer {{tokenAdmin}}
 
+## Test Create Post (Writer should work)
+POST http://localhost:3000/posts
+Content-Type: application/json
+Authorization: Bearer {{tokenWriter}}
+
+{
+  "title":"Writer's post",
+  "content":"This is a post by writer",
+  "published":true
+}
 
 ###
 
-GET http://localhost:3000/users
-Authorization: Bearer {{tokenWriter}}
+## OAuth Config Status
+GET http://localhost:3000/auth/config/oauth
+
 ###
