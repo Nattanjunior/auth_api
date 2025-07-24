@@ -1,16 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RequiredRoles } from 'src/auth/required-roles.decorator';
-import { Roles } from '@prisma/client';
 import { RoleGuard } from 'src/auth/role/role.guard';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
+import { Request } from 'express';
+import { User as PrismaUser } from '@prisma/client';
 
-@UseGuards(AuthGuard, RoleGuard)
-@RequiredRoles(Roles.ADMIN)
+interface RequestWithUser extends Request {
+  user?: PrismaUser;
+}
+
+@UseGuards(JwtAuthGuard, RoleGuard)
+@RequiredRoles('ADMIN')
+@ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -22,8 +28,8 @@ export class UsersController {
     description: 'User created successfully',
     type: User,
   })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() createUserDto: CreateUserDto, @Req() req: RequestWithUser) {
+    return this.usersService.create(createUserDto, req.user!);
   }
 
   @Get()
@@ -33,8 +39,8 @@ export class UsersController {
     description: 'Users fetched successfully',
     type: [User],
   })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Req() req: RequestWithUser) {
+    return this.usersService.findAll(req.user!);
   }
 
   @Get(':id')
@@ -44,8 +50,8 @@ export class UsersController {
     description: 'User fetched successfully',
     type: User,
   })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.usersService.findOne(id, req.user!);
   }
 
   @Patch(':id')
@@ -55,8 +61,8 @@ export class UsersController {
     description: 'User updated successfully',
     type: User,
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Req() req: RequestWithUser) {
+    return this.usersService.update(id, updateUserDto, req.user!);
   }
 
   @Delete(':id')
@@ -66,7 +72,7 @@ export class UsersController {
     description: 'User deleted successfully',
     type: User,
   })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  remove(@Param('id') id: string, @Req() req: RequestWithUser) {
+    return this.usersService.remove(id, req.user!);
   }
 }
