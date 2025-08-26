@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-github2';
 import { AuthService } from '../auth.service';
 import { AuthProvider, Roles } from '@prisma/client';
+import type { UsersProps } from 'src/types/types-users';
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
@@ -41,21 +42,19 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
     }
 
     try {
-      // Busca usuário existente
       let user = await this.authService.findUserByEmail(email);
-      
+      const userProviderGithub = user?.authProvider !== AuthProvider.GITHUB || user.providerId !== id.toString();
+
       if (user) {
-        // Atualiza dados do usuário existente se necessário
-        if (user.authProvider !== AuthProvider.GITHUB || user.providerId !== id.toString()) {
+        if (userProviderGithub) {
           user = await this.authService.updateOAuthUser(user.id, {
             authProvider: AuthProvider.GITHUB,
             providerId: id.toString(),
             avatar: photos?.[0]?.value,
             emailVerified: true,
-          }) as any;
+          })  as UsersProps;
         }
       } else {
-        // Cria novo usuário
         user = await this.authService.createOAuthUser({
           email,
           name: profile.displayName || username,
@@ -63,12 +62,14 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
           providerId: id.toString(),
           avatar: photos?.[0]?.value,
           emailVerified: true,
-          role: Roles.ADMIN, // Todos são ADMIN por padrão
-        }) as any;
+          isActive: true,
+          password: null,
+          role: Roles.ADMIN,
+        }) as UsersProps;
       }
 
       // Remove password do objeto antes de retornar
-      const { password, ...userWithoutPassword } = user as any;
+      const { password, ...userWithoutPassword } = user as UsersProps;
       return done(null, userWithoutPassword);
     } catch (error) {
       return done(error, false);
