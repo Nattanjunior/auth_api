@@ -2,7 +2,7 @@ import { Body, Controller, Post, Get, UseGuards, Req, Res } from '@nestjs/common
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiOkResponse, ApiTags, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { Roles } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +10,7 @@ import { OAuthConfigStatusDto } from './dto/oauth-config-status.dto';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
 import { GitHubAuthGuard } from './guards/github-auth.guard';
 import { Request, Response } from 'express';
+import type { UsersProps } from 'src/types/types-users';
 
 
 
@@ -112,7 +113,6 @@ export class AuthController {
     }
   })
   async register(@Body() registerDto: RegisterDto) {
-    // Converte RegisterDto para CreateUserDto com valores padrão
     const createUserDto: CreateUserDto = {
       ...registerDto,
       role: Roles.ADMIN, // 🔥 SEMPRE ADMIN POR PADRÃO
@@ -171,42 +171,11 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
-  @ApiOperation({ 
-    summary: 'Callback Google OAuth 2.0',
-    description: 'Endpoint de callback após autenticação Google. Retorna JWT token.'
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Autenticação Google realizada com sucesso',
-    schema: {
-      type: 'object',
-      properties: {
-        access_token: {
-          type: 'string',
-          description: 'Token JWT para autenticação',
-          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-        },
-        user: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            name: { type: 'string' },
-            email: { type: 'string' },
-            role: { type: 'string', example: 'ADMIN' },
-            authProvider: { type: 'string', example: 'GOOGLE' }
-          }
-        }
-      }
-    }
-  })
+  @ApiExcludeEndpoint()
   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
     const user = req.user;
-    const tokenData = await this.authService.generateJwtFromUser(user);
+    const tokenData = await this.authService.generateJwtFromUser(user as UsersProps);
     
-    // Em produção, você pode redirecionar para o frontend com o token
-    // res.redirect(`${process.env.FRONTEND_URL}/auth/success?token=${tokenData.access_token}`);
-    
-    // Para desenvolvimento, retorna JSON
     return res.json({
       message: 'Autenticação Google realizada com sucesso',
       ...tokenData,
@@ -234,42 +203,10 @@ export class AuthController {
 
   @Get('github/callback')
   @UseGuards(GitHubAuthGuard)
-  @ApiOperation({ 
-    summary: 'Callback GitHub OAuth 2.0',
-    description: 'Endpoint de callback após autenticação GitHub. Retorna JWT token.'
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Autenticação GitHub realizada com sucesso',
-    schema: {
-      type: 'object',
-      properties: {
-        access_token: {
-          type: 'string',
-          description: 'Token JWT para autenticação',
-          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-        },
-        user: {
-          type: 'object',
-          properties: {
-            id: { type: 'string' },
-            name: { type: 'string' },
-            email: { type: 'string' },
-            role: { type: 'string', example: 'ADMIN' },
-            authProvider: { type: 'string', example: 'GITHUB' }
-          }
-        }
-      }
-    }
-  })
+  @ApiExcludeEndpoint() 
   async githubAuthCallback(@Req() req: Request, @Res() res: Response) {
     const user = req.user;
-    const tokenData = await this.authService.generateJwtFromUser(user);
-    
-    // Em produção, você pode redirecionar para o frontend com o token
-    // res.redirect(`${process.env.FRONTEND_URL}/auth/success?token=${tokenData.access_token}`);
-    
-    // Para desenvolvimento, retorna JSON
+    const tokenData = await this.authService.generateJwtFromUser(user as UsersProps);
     return res.json({
       message: 'Autenticação GitHub realizada com sucesso',
       ...tokenData,
