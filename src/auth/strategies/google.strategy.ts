@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { AuthService } from '../auth.service';
 import { AuthProvider, Roles } from '@prisma/client';
+import type { UsersProps } from 'src/types/types-users';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -41,34 +42,33 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     }
 
     try {
-      // Busca usuário existente
       let user = await this.authService.findUserByEmail(email);
+      const userProvider = user?.authProvider !== AuthProvider.GOOGLE || user.providerId !== id;
       
       if (user) {
-        // Atualiza dados do usuário existente se necessário
-        if (user.authProvider !== AuthProvider.GOOGLE || user.providerId !== id) {
+        if (userProvider) {
           user = await this.authService.updateOAuthUser(user.id, {
             authProvider: AuthProvider.GOOGLE,
-            providerId: id,
+            providerId: id ,
             avatar: photos[0]?.value,
             emailVerified: true,
-          }) as any;
+          }) as UsersProps;
         }
       } else {
-        // Cria novo usuário
         user = await this.authService.createOAuthUser({
-          email,
-          name: name.givenName + ' ' + name.familyName,
+          email: email as string,
+          name: `${name.givenName} ${name.familyName}`,
           authProvider: AuthProvider.GOOGLE,
           providerId: id,
           avatar: photos[0]?.value,
           emailVerified: true,
-          role: Roles.ADMIN, // Todos são ADMIN por padrão
-        }) as any;
+          role: Roles.ADMIN,
+          isActive: true,
+          password: null,
+        }) as UsersProps;
       }
 
-      // Remove password do objeto antes de retornar
-      const { password, ...userWithoutPassword } = user as any;
+      const { password, ...userWithoutPassword } = user as UsersProps;
       return done(null, userWithoutPassword);
     } catch (error) {
       return done(error, false);
