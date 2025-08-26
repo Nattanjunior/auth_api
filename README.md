@@ -139,11 +139,11 @@ npm run build && npm start   # Produção
 
 | Método | Endpoint | Descrição | Autenticação |
 |--------|----------|-----------|--------------|
-| `POST` | `/auth/login` | Login local | ❌ |
-| `POST` | `/auth/register` | Registro público | ❌ |
-| `GET` | `/auth/google` | OAuth Google | ❌ |
-| `GET` | `/auth/github` | OAuth GitHub | ❌ |
-| `GET` | `/auth/config/oauth` | Status OAuth | ❌ |
+| `POST` | `/auth/login` | Login local | ✅ |
+| `POST` | `/auth/register` | Registro público | ✅ |
+| `GET` | `/auth/google` | OAuth Google | ✅ |
+| `GET` | `/auth/github` | OAuth GitHub | ✅ |
+| `GET` | `/auth/config/oauth` | Status OAuth | ✅ |
 
 ### 👥 Usuários (ADMIN apenas)
 
