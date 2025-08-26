@@ -21,16 +21,6 @@ interface RequestWithUser extends Request {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Create a user' })
-  @ApiResponse({
-    status: 201,
-    description: 'User created successfully',
-    type: User,
-  })
-  create(@Body() createUserDto: CreateUserDto, @Req() req: RequestWithUser) {
-    return this.usersService.create(createUserDto, req.user!);
-  }
 
   @Get()
   @ApiOperation({ summary: 'Get all users' })
