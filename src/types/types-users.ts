@@ -17,3 +17,10 @@ export type UsersProps = {
   updatedAt: Date;
 };
 
+export type CreateUsersProps = Omit<
+  UsersProps,
+  "id" | "createdAt" | "updatedAt" | "lastLoginAt" | "permissions"
+> & {
+  password: string | null; // <- opcional na criação
+  isActive: boolean;       // <- opcional na criação
+};
