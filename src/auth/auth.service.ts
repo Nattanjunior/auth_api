@@ -4,7 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import bcrypt from 'bcrypt'
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { Roles } from '@prisma/client';
+import { Roles, type AuthProvider } from '@prisma/client';
+import type { CreateUsersProps, UsersProps } from 'src/types/types-users';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +48,7 @@ export class AuthService {
   }
 
   async findUserByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findUniqueOrThrow({ where: { email } });
   }
 
   async register(createUserDto: CreateUserDto) {
@@ -70,27 +71,10 @@ export class AuthService {
     return userWithoutPassword;
   }
 
-  async createOAuthUser(userData: {
-    email: string;
-    name: string;
-    authProvider: string;
-    providerId: string;
-    avatar?: string;
-    emailVerified: boolean;
-    role: Roles;
-  }) {
+  async createOAuthUser(userData: CreateUsersProps) {
     const user = await this.prisma.user.create({
       data: {
-        name: userData.name,
-        email: userData.email,
-        authProvider: userData.authProvider as any,
-        providerId: userData.providerId,
-        avatar: userData.avatar,
-        emailVerified: userData.emailVerified,
-        role: userData.role,
-        isActive: true,
-        // OAuth users don't have password
-        password: null,
+         ...userData,
       }
     });
 
@@ -107,7 +91,7 @@ export class AuthService {
     const user = await this.prisma.user.update({
       where: { id: userId },
       data: {
-        authProvider: updateData.authProvider as any,
+        authProvider: updateData.authProvider as AuthProvider,
         providerId: updateData.providerId,
         avatar: updateData.avatar,
         emailVerified: updateData.emailVerified,
@@ -119,7 +103,7 @@ export class AuthService {
     return userWithoutPassword;
   }
 
-  async generateJwtFromUser(user: any) {
+  async generateJwtFromUser(user: UsersProps) {
     const token = this.jwt.sign({
       name: user.name,
       email: user.email,
