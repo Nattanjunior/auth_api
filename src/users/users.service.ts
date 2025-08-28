@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import bcrypt from 'bcrypt'
@@ -13,22 +12,6 @@ export class UsersService {
     private prisma: PrismaService,
     private abilityService: CaslService
   ) { }
-
-  create(createUserDto: CreateUserDto, currentUser: User) {
-    const ability = this.abilityService.createForUser(currentUser);
-
-    if (!ability.can('create', 'User')) {
-      throw new Error('Unauthorized');
-    }
-
-    return this.prisma.user.create({
-      data: {
-        ...createUserDto,
-        password: bcrypt.hashSync(createUserDto.password, 10),
-        role: 'ADMIN' as Roles,
-      }
-    })
-  }
 
   findAll(currentUser: User) {
     const ability = this.abilityService.createForUser(currentUser);

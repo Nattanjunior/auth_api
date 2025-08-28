@@ -3,7 +3,6 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiResponse, ApiOkResponse, ApiTags, ApiExcludeEndpoint } from '@nestjs/swagger';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { Roles } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { OAuthConfigStatusDto } from './dto/oauth-config-status.dto';
@@ -88,7 +87,7 @@ export class AuthController {
         id: { type: 'string', example: 'cuid123' },
         name: { type: 'string', example: 'John Doe' },
         email: { type: 'string', example: 'john.doe@example.com' },
-        role: { type: 'string', example: 'ADMIN' },
+        role: { type: 'string', example: 'READER' },
         authProvider: { type: 'string', example: 'LOCAL' },
         isActive: { type: 'boolean', example: true },
         createdAt: { type: 'string', format: 'date-time' },
@@ -113,43 +112,37 @@ export class AuthController {
     }
   })
   async register(@Body() registerDto: RegisterDto) {
-    const createUserDto: CreateUserDto = {
-      ...registerDto,
-      role: Roles.ADMIN, // 🔥 SEMPRE ADMIN POR PADRÃO
-      permissions: undefined, // ✅ Ignorado por segurança
-    };
-    
-    return this.authService.register(createUserDto);
+    return this.authService.register(registerDto);
   }
 
 
 
-  @Get('config/oauth')
-  @ApiOperation({ summary: 'Verificar configuração OAuth' })
-  @ApiOkResponse({
-    description: 'Status das configurações OAuth',
-    type: OAuthConfigStatusDto,
-  })
-  checkOAuthConfig(): OAuthConfigStatusDto {
-    const googleConfig = {
-      clientId: !!this.configService.get('oauth.google.clientId'),
-      clientSecret: !!this.configService.get('oauth.google.clientSecret'),
-      callbackURL: this.configService.get('oauth.google.callbackURL'),
-      configured: !!this.configService.get('oauth.google.clientId') && !!this.configService.get('oauth.google.clientSecret'),
-    };
+  // @Get('config/oauth')
+  // @ApiOperation({ summary: 'Verificar configuração OAuth' })
+  // @ApiOkResponse({
+  //   description: 'Status das configurações OAuth',
+  //   type: OAuthConfigStatusDto,
+  // })
+  // checkOAuthConfig(): OAuthConfigStatusDto {
+  //   const googleConfig = {
+  //     clientId: !!this.configService.get('oauth.google.clientId'),
+  //     clientSecret: !!this.configService.get('oauth.google.clientSecret'),
+  //     callbackURL: this.configService.get('oauth.google.callbackURL'),
+  //     configured: !!this.configService.get('oauth.google.clientId') && !!this.configService.get('oauth.google.clientSecret'),
+  //   };
 
-    const githubConfig = {
-      clientId: !!this.configService.get('oauth.github.clientId'),
-      clientSecret: !!this.configService.get('oauth.github.clientSecret'),
-      callbackURL: this.configService.get('oauth.github.callbackURL'),
-      configured: !!this.configService.get('oauth.github.clientId') && !!this.configService.get('oauth.github.clientSecret'),
-    };
+  //   const githubConfig = {
+  //     clientId: !!this.configService.get('oauth.github.clientId'),
+  //     clientSecret: !!this.configService.get('oauth.github.clientSecret'),
+  //     callbackURL: this.configService.get('oauth.github.callbackURL'),
+  //     configured: !!this.configService.get('oauth.github.clientId') && !!this.configService.get('oauth.github.clientSecret'),
+  //   };
 
-    return {
-      google: googleConfig,
-      github: githubConfig,
-    };
-  }
+  //   return {
+  //     google: googleConfig,
+  //     github: githubConfig,
+  //   };
+  // }
 
   // ===============================
   // GOOGLE OAUTH 2.0 ROUTES
@@ -159,7 +152,7 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @ApiOperation({ 
     summary: 'Iniciar autenticação Google OAuth 2.0',
-    description: 'Redireciona para a página de login do Google. Após autorização, retorna para /auth/google/callback'
+    description: 'Copie a url e cole no seu navegador'
   })
   @ApiResponse({
     status: 302,
@@ -191,7 +184,7 @@ export class AuthController {
   @UseGuards(GitHubAuthGuard)
   @ApiOperation({ 
     summary: 'Iniciar autenticação GitHub OAuth 2.0',
-    description: 'Redireciona para a página de login do GitHub. Após autorização, retorna para /auth/github/callback'
+    description: 'Copie a url e cole no seu navegador'
   })
   @ApiResponse({
     status: 302,

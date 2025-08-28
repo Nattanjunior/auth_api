@@ -62,7 +62,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
           providerId: id,
           avatar: photos[0]?.value,
           emailVerified: true,
-          role: Roles.ADMIN,
+          role: Roles.READER,
           isActive: true,
           password: null,
         }) as UsersProps;

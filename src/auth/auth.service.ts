@@ -48,7 +48,7 @@ export class AuthService {
   }
 
   async findUserByEmail(email: string) {
-    return this.prisma.user.findUniqueOrThrow({ where: { email } });
+    return this.prisma.user.findUnique({ where: { email } });
   }
 
   async register(createUserDto: CreateUserDto) {
@@ -62,7 +62,7 @@ export class AuthService {
         name: createUserDto.name,
         email: createUserDto.email,
         password: bcrypt.hashSync(createUserDto.password, 10),
-        role: Roles.ADMIN,
+        role: Roles.READER,
       }
     });
     

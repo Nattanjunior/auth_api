@@ -64,7 +64,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
           emailVerified: true,
           isActive: true,
           password: null,
-          role: Roles.ADMIN,
+          role: Roles.READER,
         }) as UsersProps;
       }
 
