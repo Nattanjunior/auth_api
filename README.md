@@ -176,13 +176,7 @@ READER   → Visualiza posts públicos + lê usuários
 ```
 
 ### Configuração Atual
-> ⚠️ **Importante**: Por padrão, todos os usuários (local e OAuth) são criados como **ADMIN**.
-
-Para alterar este comportamento:
-```typescript
-// src/auth/auth.service.ts - linha 45
-role: Roles.READER, // Mude de ADMIN para a role desejada
-```
+> ⚠️ **Importante**: Por padrão, todos os usuários (local e OAuth) são criados como **READER**.
 
 ## 🌐 Configuração OAuth
 
