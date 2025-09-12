@@ -19,11 +19,7 @@ export class AuthService {
       where: { email: loginDto.email },
     })
 
-    if (!user) {
-      throw new Error('Invalid Credentials')
-    }
-
-    if (!user.password) {
+    if (!user || !user.password) {
       throw new Error('Invalid Credentials')
     }
 
