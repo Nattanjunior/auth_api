@@ -115,39 +115,6 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-
-
-  // @Get('config/oauth')
-  // @ApiOperation({ summary: 'Verificar configuração OAuth' })
-  // @ApiOkResponse({
-  //   description: 'Status das configurações OAuth',
-  //   type: OAuthConfigStatusDto,
-  // })
-  // checkOAuthConfig(): OAuthConfigStatusDto {
-  //   const googleConfig = {
-  //     clientId: !!this.configService.get('oauth.google.clientId'),
-  //     clientSecret: !!this.configService.get('oauth.google.clientSecret'),
-  //     callbackURL: this.configService.get('oauth.google.callbackURL'),
-  //     configured: !!this.configService.get('oauth.google.clientId') && !!this.configService.get('oauth.google.clientSecret'),
-  //   };
-
-  //   const githubConfig = {
-  //     clientId: !!this.configService.get('oauth.github.clientId'),
-  //     clientSecret: !!this.configService.get('oauth.github.clientSecret'),
-  //     callbackURL: this.configService.get('oauth.github.callbackURL'),
-  //     configured: !!this.configService.get('oauth.github.clientId') && !!this.configService.get('oauth.github.clientSecret'),
-  //   };
-
-  //   return {
-  //     google: googleConfig,
-  //     github: githubConfig,
-  //   };
-  // }
-
-  // ===============================
-  // GOOGLE OAUTH 2.0 ROUTES
-  // ===============================
-
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   @ApiOperation({ 
