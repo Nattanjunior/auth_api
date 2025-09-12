@@ -36,7 +36,7 @@ Este projeto demonstra uma implementação robusta de autenticação moderna, in
 - **Conditions**: Regras contextuais (ex: "apenas próprios posts")
 
 #### 3. **Configuração por Padrão**
-- **Todos usuários = ADMIN**: Simplifica onboarding inicial
+- **Todos usuários = READER**
 - **Fácil customização**: Alteração simples no código para roles específicas
 
 ## 📁 Estrutura do Projeto
@@ -143,15 +143,13 @@ npm run build && npm start   # Produção
 | `POST` | `/auth/register` | Registro público | ✅ |
 | `GET` | `/auth/google` | OAuth Google | ✅ |
 | `GET` | `/auth/github` | OAuth GitHub | ✅ |
-| `GET` | `/auth/config/oauth` | Status OAuth | ✅ |
 
 ### 👥 Usuários (ADMIN apenas)
 
 | Método | Endpoint | Descrição | Role Necessária |
 |--------|----------|-----------|-----------------|
-| `GET` | `/users` | Listar usuários | ADMIN |
-| `GET` | `/users/:id` | Buscar usuário | ADMIN |
-| `POST` | `/users` | Criar usuário | ADMIN |
+| `GET` | `/users` | Listar usuários | READER+ |
+| `GET` | `/users/:id` | Buscar usuário | READER+  |
 | `PATCH` | `/users/:id` | Atualizar usuário | ADMIN |
 | `DELETE` | `/users/:id` | Remover usuário | ADMIN |
 
