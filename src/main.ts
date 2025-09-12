@@ -9,14 +9,14 @@ async function bootstrap() {
   // ValidationPipe global para validar DTOs
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
-    forbidNonWhitelisted: true,
+    forbidNonWhitelisted: false,
     transform: true,
   }));
 
   // Configuração do Swagger
   const config = new DocumentBuilder()
-    .setTitle('NestJS Auth API')
-    .setDescription('Sistema de autenticação profissional com OAuth 2.0')
+    .setTitle('Auth API')
+    .setDescription('Sistema de autenticação com OAuth 2.0')
     .setVersion('1.0')
     .addBearerAuth(
       {
