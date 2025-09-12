@@ -8,11 +8,10 @@
     resource: string;
     condition?: Record<string, any>;
   }>;
-
 export class UpdateUserDto {
   @ApiPropertyOptional({
     description: 'Nome do usuário',
-    example: 'John Doe',
+    example: 'string',
     minLength: 2,
     maxLength: 100
   })
@@ -24,8 +23,8 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional({
     description: 'Email do usuário',
-    example: 'john.doe@example.com',
-    format: 'email'
+    example: 'string',
+    format: 'string'
   })
   @IsEmail({}, { message: 'Email deve ser um endereço de email válido' })
   @IsOptional()
@@ -33,7 +32,7 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional({
     description: 'Senha do usuário',
-    example: 'password123',
+    example: 'string',
     minLength: 6,
     maxLength: 128
   })
@@ -45,7 +44,7 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional({
     description: 'Função do usuário',
-    example: 'ADMIN',
+    example: 'string',
     enum: ['ADMIN', 'EDITOR', 'WRITER', 'READER']
   })
   @IsEnum(['ADMIN', 'EDITOR', 'WRITER', 'READER'], { message: 'Role deve ser ADMIN, EDITOR, WRITER ou READER' })
