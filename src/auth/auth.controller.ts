@@ -76,7 +76,6 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ 
     summary: 'Registro público de usuário',
-    description: 'Cria um novo usuário com role ADMIN por padrão. Apenas nome, email e senha são necessários.'
   })
   @ApiResponse({
     status: 201,
