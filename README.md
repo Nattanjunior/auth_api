@@ -196,7 +196,7 @@ READER   → Visualiza posts públicos + lê usuários
 
 ## 📚 Documentação Interativa
 
-Acesse `http://localhost:3000/docs` para:
+Acesse `https://auth-api-i05f.onrender.com/docs#/` para:
 - ✅ Explorar todos os endpoints
 - ✅ Testar requisições diretamente
 - ✅ Ver schemas e validações
